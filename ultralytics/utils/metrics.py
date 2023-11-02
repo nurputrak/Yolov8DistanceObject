@@ -214,6 +214,8 @@ class ConfusionMatrix:
             self.matrix[p][t] += 1
 
     def process_batch(self, detections, labels):
+        print("====wp====: ", detections[:, 5].int())
+        return
         # known_width = {'lampu lalu lintas':15, 'orang': 30, 'pilar': 100, 'plang': 40,
         #        'pohon': 25, 'tiang': 20}
         # known_height = {'bangku':60, 'bollard':40, 'mobil':160, 'motor':85, 'pot':50,
@@ -260,7 +262,6 @@ class ConfusionMatrix:
             return
 
         detections = detections[detections[:, 4] > self.conf]
-        print("====wp====: ", detections[:, 5].int())
         gt_classes = labels[:, 0].int()
         detection_classes = detections[:, 5].int()
         iou = box_iou(labels[:, 1:], detections[:, :4])
