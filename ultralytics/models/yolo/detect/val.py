@@ -106,7 +106,6 @@ class DetectionValidator(BaseValidator):
                 continue
 
             # Predictions
-            return
             if self.args.single_cls:
                 pred[:, 5] = 0
             predn = pred.clone()
