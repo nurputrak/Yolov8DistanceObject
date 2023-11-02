@@ -214,6 +214,36 @@ class ConfusionMatrix:
             self.matrix[p][t] += 1
 
     def process_batch(self, detections, labels):
+        # known_width = {'lampu lalu lintas':15, 'orang': 30, 'pilar': 100, 'plang': 40,
+        #        'pohon': 25, 'tiang': 20}
+        # known_height = {'bangku':60, 'bollard':40, 'mobil':160, 'motor':85, 'pot':50,
+        #                 'tempat sampah':120, 'zebra cross':100}
+        # known_dis = {'bangku': 400, 'bollard':200, 'lampu lalu lintas':400,
+        #              'mobil':300, 'motor':200, 'orang': 500, 'pilar': 500, 'plang': 250,
+        #              'pohon': 100, 'pot':200, 'tempat sampah':550, 'tiang': 250,
+        #              'zebra cross':250}
+        
+        # width_px_object = {'bangku': 78, 'bollard':80, 'lampu lalu lintas':43,
+        #                    'mobil':181, 'motor':307, 'orang': 31, 'pilar': 150, 'plang': 108,
+        #                    'pohon': 117, 'pot':250, 'tempat sampah':166, 'tiang': 38,
+        #                    'zebra cross':132}
+        
+        # center_x = (left + right)/2
+        # center_y = (bottom + top)/2
+        # width = right - left
+        # height = bottom - top
+        # distance1 = pow(640 - (center_y + (height - 36)),2)/5780
+        
+        # if(object in ['bangku','bollard', 'mobil', 'motor', 'pot', 'tempat sampah', 'zebra cross']):
+        #     focal_length = (width_px_object[object] / known_height[object]) * known_dis[object]
+        #     distance2 = round((((known_height[object] / height) * focal_length) / 100), 1)
+        # else:
+        #     focal_length = (width_px_object[object] / known_width[object]) * known_dis[object]
+        #     distance2 = round((((known_width[object] / width) * focal_length) / 100), 1)
+        
+        # if(distance1 < distance2): return distance1
+        
+        # return distance2
         """
         Update confusion matrix for object detection task.
 
@@ -230,6 +260,7 @@ class ConfusionMatrix:
             return
 
         detections = detections[detections[:, 4] > self.conf]
+        print("====wp====: ", detections[:, 5].int())
         gt_classes = labels[:, 0].int()
         detection_classes = detections[:, 5].int()
         iou = box_iou(labels[:, 1:], detections[:, :4])
