@@ -106,6 +106,7 @@ class DetectionValidator(BaseValidator):
                 continue
 
             # Predictions
+            return
             if self.args.single_cls:
                 pred[:, 5] = 0
             predn = pred.clone()
@@ -179,6 +180,8 @@ class DetectionValidator(BaseValidator):
         Returns:
             (torch.Tensor): Correct prediction matrix of shape [N, 10] for 10 IoU levels.
         """
+        print("====wp====: ", detections[:, 5].int())
+        return
         iou = box_iou(labels[:, 1:], detections[:, :4])
         return self.match_predictions(detections[:, 5], labels[:, 0], iou)
 
