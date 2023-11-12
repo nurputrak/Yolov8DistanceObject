@@ -191,8 +191,12 @@ class DetectionValidator(BaseValidator):
         Returns:
             (torch.Tensor): Correct prediction matrix of shape [N, 10] for 10 IoU levels.
         """
-        
+        print("detection ==== \n")
+        print(detections[:, :4])
+        print("======")
         iou = box_iou(labels[:, 1:], detections[:, :4])
+
+        print("\nres iou ==== ", iou)
         return self.match_predictions(detections[:, 5], labels[:, 0], iou)
 
     def build_dataset(self, img_path, mode='val', batch=None):
