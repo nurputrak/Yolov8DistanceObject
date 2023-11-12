@@ -281,8 +281,8 @@ class Model(nn.Module):
         print("===========\n")
         validator(model=self.model)
         self.metrics = validator.metrics
-        print("metric validator is ", self.metrics)
-        print("===========\n")
+        # print("metric validator is ", self.metrics)
+        # print("===========\n")
         return validator.metrics
 
     def benchmark(self, **kwargs):
