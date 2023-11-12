@@ -183,6 +183,9 @@ class BaseValidator:
             # Postprocess
             with dt[3]:
                 preds = self.postprocess(preds)
+                print("ini preds post: ===\n")
+                print(preds)
+                print("\n\n")
 
             self.update_metrics(preds, batch)
             if self.args.plots and batch_i < 3:
