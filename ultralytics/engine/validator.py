@@ -228,6 +228,7 @@ class BaseValidator:
         Returns:
             (torch.Tensor): Correct tensor of shape(N,10) for 10 IoU thresholds.
         """
+        print("match prediction ============\n\n")
         # Dx10 matrix, where D - detections, 10 - IoU thresholds
         correct = np.zeros((pred_classes.shape[0], self.iouv.shape[0])).astype(bool)
         # LxD matrix where L - labels (rows), D - detections (columns)
