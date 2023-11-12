@@ -91,12 +91,18 @@ class DetectionValidator(BaseValidator):
         """Metrics."""
         for si, pred in enumerate(preds):
             idx = batch['batch_idx'] == si
+            print("idx === ", idx)
             cls = batch['cls'][idx]
+            print("cls === ", cls)
             bbox = batch['bboxes'][idx]
+            print("bbox === ", bbox)
             nl, npr = cls.shape[0], pred.shape[0]  # number of labels, predictions
+            print("\n\n nl === ", nl)
+            print("npr === ", npr)
             shape = batch['ori_shape'][si]
             correct_bboxes = torch.zeros(npr, self.niou, dtype=torch.bool, device=self.device)  # init
             self.seen += 1
+            print("\n\nseen === ", self.seen)
 
             if npr == 0:
                 if nl:
@@ -109,9 +115,11 @@ class DetectionValidator(BaseValidator):
             if self.args.single_cls:
                 pred[:, 5] = 0
             predn = pred.clone()
+            print("\n\npredn1 === ", predn)
             ops.scale_boxes(batch['img'][si].shape[1:], predn[:, :4], shape,
                             ratio_pad=batch['ratio_pad'][si])  # native-space pred
-
+            print("\n\npredn2 === ", predn)
+            
             # Evaluate
             if nl:
                 height, width = batch['img'].shape[2:]
@@ -120,6 +128,10 @@ class DetectionValidator(BaseValidator):
                 ops.scale_boxes(batch['img'][si].shape[1:], tbox, shape,
                                 ratio_pad=batch['ratio_pad'][si])  # native-space labels
                 labelsn = torch.cat((cls, tbox), 1)  # native-space labels
+
+                print("\npredn final === ", predn)
+                print("\nlabelsn final === ", labelsn)
+                
                 correct_bboxes = self._process_batch(predn, labelsn)
                 # TODO: maybe remove these `self.` arguments as they already are member variable
                 if self.args.plots:
