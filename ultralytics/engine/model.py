@@ -242,7 +242,7 @@ class Model(nn.Module):
         if prompts and hasattr(self.predictor, 'set_prompts'):  # for SAM-type models
             self.predictor.set_prompts(prompts)
         print("=========== is cli: ",is_cli) 
-        print(" ===========\n")
+        print("===========\n")
         return self.predictor.predict_cli(source=source) if is_cli else self.predictor(source=source, stream=stream)
 
     def track(self, source=None, stream=False, persist=False, **kwargs):
@@ -277,8 +277,12 @@ class Model(nn.Module):
         args = {**self.overrides, **custom, **kwargs, 'mode': 'val'}  # highest priority args on the right
 
         validator = (validator or self._smart_load('validator'))(args=args, _callbacks=self.callbacks)
+        print("validator is ", validator)
+        print("===========\n")
         validator(model=self.model)
         self.metrics = validator.metrics
+        print("metric validator is ", self.metrics)
+        print("===========\n")
         return validator.metrics
 
     def benchmark(self, **kwargs):
