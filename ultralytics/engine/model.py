@@ -233,12 +233,16 @@ class Model(nn.Module):
         if not self.predictor:
             self.predictor = (predictor or self._smart_load('predictor'))(overrides=args, _callbacks=self.callbacks)
             self.predictor.setup_model(model=self.model, verbose=is_cli)
+            print("====== to not self predictor =======\n\n")
         else:  # only update args if predictor is already setup
             self.predictor.args = get_cfg(self.predictor.args, args)
             if 'project' in args or 'name' in args:
                 self.predictor.save_dir = get_save_dir(self.predictor.args)
+            print("====== is self predictor =======\n\n")
         if prompts and hasattr(self.predictor, 'set_prompts'):  # for SAM-type models
             self.predictor.set_prompts(prompts)
+        print("=========== is cli: ",is_cli) 
+        print(" ===========\n)
         return self.predictor.predict_cli(source=source) if is_cli else self.predictor(source=source, stream=stream)
 
     def track(self, source=None, stream=False, persist=False, **kwargs):
