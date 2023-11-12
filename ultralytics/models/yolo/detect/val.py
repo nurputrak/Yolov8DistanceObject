@@ -119,6 +119,7 @@ class DetectionValidator(BaseValidator):
             ops.scale_boxes(batch['img'][si].shape[1:], predn[:, :4], shape,
                             ratio_pad=batch['ratio_pad'][si])  # native-space pred
             print("\n\npredn2 === ", predn)
+            print("\n========================================\n")
             
             # Evaluate
             if nl:
