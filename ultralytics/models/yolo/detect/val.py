@@ -133,6 +133,9 @@ class DetectionValidator(BaseValidator):
                 print("\nlabelsn final === ", labelsn)
                 
                 correct_bboxes = self._process_batch(predn, labelsn)
+                print("\ncorrect_bboxes:\n")
+                print(correct_bboxes)
+                
                 # TODO: maybe remove these `self.` arguments as they already are member variable
                 if self.args.plots:
                     self.confusion_matrix.process_batch(predn, labelsn)
