@@ -242,7 +242,7 @@ class Model(nn.Module):
         if prompts and hasattr(self.predictor, 'set_prompts'):  # for SAM-type models
             self.predictor.set_prompts(prompts)
         print("=========== is cli: ",is_cli) 
-        print(" ===========\n)
+        print(" ===========\n")
         return self.predictor.predict_cli(source=source) if is_cli else self.predictor(source=source, stream=stream)
 
     def track(self, source=None, stream=False, persist=False, **kwargs):
