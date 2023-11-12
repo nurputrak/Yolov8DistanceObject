@@ -108,6 +108,7 @@ class BaseValidator:
         self.training = trainer is not None
         augment = self.args.augment and (not self.training)
         if self.training:
+            print("if self training ====\n")
             self.device = trainer.device
             self.data = trainer.data
             self.args.half = self.device.type != 'cpu'  # force FP16 val during training
@@ -118,6 +119,7 @@ class BaseValidator:
             self.args.plots &= trainer.stopper.possible_stop or (trainer.epoch == trainer.epochs - 1)
             model.eval()
         else:
+            print("else auto backend ====\n")
             callbacks.add_integration_callbacks(self)
             model = AutoBackend(model or self.args.model,
                                 device=select_device(self.args.device, self.args.batch),
@@ -164,8 +166,14 @@ class BaseValidator:
                 batch = self.preprocess(batch)
 
             # Inference
+            print("ini batch_i: ", batch_i)
+            print("\nini batch: ", batch)
+            print("=================\n")
             with dt[1]:
                 preds = model(batch['img'], augment=augment)
+                print("ini preds: ===\n")
+                print(preds)
+                print("\n\n")
 
             # Loss
             with dt[2]:
