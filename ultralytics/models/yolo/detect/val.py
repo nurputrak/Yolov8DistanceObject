@@ -120,8 +120,8 @@ class DetectionValidator(BaseValidator):
                             ratio_pad=batch['ratio_pad'][si])  # native-space pred
             print("\n\npredn2 === ", predn)
             print("\n========================================\n")
-            for i, (left, top, right, bottom, cls) in enumerate(torch.cat((predn[:,0:4], predn[:,5:6]), 1).cpu().numpy()):
-                obj_distance = self.get_distance_obj(left, top, right, bottom, cls.astype(int))
+            for i, (left, top, right, bottom, cls_pred) in enumerate(torch.cat((predn[:,0:4], predn[:,5:6]), 1).cpu().numpy()):
+                obj_distance = self.get_distance_obj(left, top, right, bottom, cls_pred.astype(int))
                 # print(obj_distance)
                 if(obj_distance > 5):
                   predn = torch.cat((predn[:i], predn[i+1:]), 0)
@@ -155,7 +155,7 @@ class DetectionValidator(BaseValidator):
                 file = self.save_dir / 'labels' / f'{Path(batch["im_file"][si]).stem}.txt'
                 self.save_one_txt(predn, self.args.save_conf, shape, file)
                 
-    def get_distance_obj(self, left, top, right, bottom, cls):
+    def get_distance_obj(self, left, top, right, bottom, cls_pred):
         list_obj = {0: 'bangku', 1: 'bollard', 2: 'lampu lalu lintas', 3: 'mobil', 4: 'motor',
               5: 'orang', 6: 'pilar', 7: 'plang', 8: 'pohon', 9: 'pot', 10: 'tempat sampah',
               11: 'tiang', 12: 'zebra cross'}
@@ -174,7 +174,7 @@ class DetectionValidator(BaseValidator):
                           'pohon': 117, 'pot':250, 'tempat sampah':166, 'tiang': 38,
                           'zebra cross':132}
     
-        obj = list_obj[cls]
+        obj = list_obj[cls_pred]
         center_x = (left + right)/2
         center_y = (bottom + top)/2
         width = right - left
