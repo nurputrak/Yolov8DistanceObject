@@ -155,7 +155,7 @@ class DetectionValidator(BaseValidator):
                 file = self.save_dir / 'labels' / f'{Path(batch["im_file"][si]).stem}.txt'
                 self.save_one_txt(predn, self.args.save_conf, shape, file)
                 
-    def get_distance_obj(left, top, right, bottom, cls):
+    def get_distance_obj(self, left, top, right, bottom, cls):
         list_obj = {0: 'bangku', 1: 'bollard', 2: 'lampu lalu lintas', 3: 'mobil', 4: 'motor',
               5: 'orang', 6: 'pilar', 7: 'plang', 8: 'pohon', 9: 'pot', 10: 'tempat sampah',
               11: 'tiang', 12: 'zebra cross'}
