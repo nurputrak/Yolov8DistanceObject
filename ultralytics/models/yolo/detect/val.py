@@ -121,7 +121,7 @@ class DetectionValidator(BaseValidator):
             print("\n\npredn2 === ", predn)
             print("\n========================================\n")
             for i, (left, top, right, bottom, cls) in enumerate(torch.cat((predn[:,0:4], predn[:,5:6]), 1).cpu().numpy()):
-                obj_distance = get_distance_obj(left, top, right, bottom, cls.astype(int))
+                obj_distance = self.get_distance_obj(left, top, right, bottom, cls.astype(int))
                 # print(obj_distance)
                 if(obj_distance > 5):
                   predn = torch.cat((predn[:i], predn[i+1:]), 0)
