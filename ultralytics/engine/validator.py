@@ -250,7 +250,7 @@ class BaseValidator:
         
         for i, threshold in enumerate(self.iouv.cpu().tolist()):
             if use_scipy:
-                print("use scipy\n")
+                # print("use scipy\n")
                 # WARNING: known issue that reduces mAP in https://github.com/ultralytics/ultralytics/pull/4708
                 import scipy  # scope import to avoid importing for all commands
                 cost_matrix = iou * (iou >= threshold)
@@ -260,7 +260,7 @@ class BaseValidator:
                     if valid.any():
                         correct[detections_idx[valid], i] = True
             else:
-                print("not use scipy\n")
+                # print("not use scipy\n")
                 matches = np.nonzero(iou >= threshold)  # IoU > threshold and classes match
                 matches = np.array(matches).T
                 # print("matches: \n")
