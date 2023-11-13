@@ -120,6 +120,11 @@ class DetectionValidator(BaseValidator):
                             ratio_pad=batch['ratio_pad'][si])  # native-space pred
             print("\n\npredn2 === ", predn)
             print("\n========================================\n")
+            for i, (left, top, right, bottom, cls) in enumerate(torch.cat((predn[:,0:4], predn[:,5:6]), 1).cpu().numpy()):
+                obj_distance = get_distance_obj(left, top, right, bottom, cls.astype(int))
+                # print(obj_distance)
+                if(obj_distance > 5):
+                  predn = torch.cat((predn[:i], predn[i+1:]), 0)
             
             # Evaluate
             if nl:
@@ -130,6 +135,7 @@ class DetectionValidator(BaseValidator):
                                 ratio_pad=batch['ratio_pad'][si])  # native-space labels
                 labelsn = torch.cat((cls, tbox), 1)  # native-space labels
 
+                print(predn.size())
                 print("\npredn final === ", predn)
                 print("\nlabelsn final === ", labelsn)
                 
@@ -148,7 +154,44 @@ class DetectionValidator(BaseValidator):
             if self.args.save_txt:
                 file = self.save_dir / 'labels' / f'{Path(batch["im_file"][si]).stem}.txt'
                 self.save_one_txt(predn, self.args.save_conf, shape, file)
-
+                
+    def get_distance_obj(left, top, right, bottom, cls):
+        list_obj = {0: 'bangku', 1: 'bollard', 2: 'lampu lalu lintas', 3: 'mobil', 4: 'motor',
+              5: 'orang', 6: 'pilar', 7: 'plang', 8: 'pohon', 9: 'pot', 10: 'tempat sampah',
+              11: 'tiang', 12: 'zebra cross'}
+    
+        known_width = {'lampu lalu lintas':15, 'orang': 30, 'pilar': 100, 'plang': 40,
+                    'pohon': 25, 'tiang': 20}
+        known_height = {'bangku':60, 'bollard':40, 'mobil':160, 'motor':85, 'pot':50,
+                        'tempat sampah':120, 'zebra cross':100}
+        known_dis = {'bangku': 400, 'bollard':200, 'lampu lalu lintas':400,
+                    'mobil':300, 'motor':200, 'orang': 500, 'pilar': 500, 'plang': 250,
+                    'pohon': 100, 'pot':200, 'tempat sampah':550, 'tiang': 250,
+                    'zebra cross':250}
+    
+        width_px_obj = {'bangku': 78, 'bollard':80, 'lampu lalu lintas':43,
+                          'mobil':181, 'motor':307, 'orang': 31, 'pilar': 150, 'plang': 108,
+                          'pohon': 117, 'pot':250, 'tempat sampah':166, 'tiang': 38,
+                          'zebra cross':132}
+    
+        obj = list_obj[cls]
+        center_x = (left + right)/2
+        center_y = (bottom + top)/2
+        width = right - left
+        height = bottom - top
+        distance1 = pow(640 - (center_y + (height - 36)),2)/5780
+    
+        if(obj in ['bangku','bollard', 'mobil', 'motor', 'pot', 'tempat sampah', 'zebra cross']):
+            focal_length = (width_px_obj[obj] / known_height[obj]) * known_dis[obj]
+            distance2 = round((((known_height[obj] / height) * focal_length) / 100), 1)
+        else:
+            focal_length = (width_px_obj[obj] / known_width[obj]) * known_dis[obj]
+            distance2 = round((((known_width[obj] / width) * focal_length) / 100), 1)
+    
+        # print(obj, cls)
+        if(distance1 < distance2): return distance1
+        return distance2
+        
     def finalize_metrics(self, *args, **kwargs):
         """Set final values for metrics speed and confusion matrix."""
         self.metrics.speed = self.speed
