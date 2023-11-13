@@ -166,14 +166,14 @@ class BaseValidator:
                 batch = self.preprocess(batch)
 
             # Inference
-            print("ini batch_i: ", batch_i)
-            print("\nini batch: ", batch)
-            print("=================\n")
+            # print("ini batch_i: ", batch_i)
+            # print("\nini batch: ", batch)
+            # print("=================\n")
             with dt[1]:
                 preds = model(batch['img'], augment=augment)
-                print("ini preds: ===\n")
-                print(preds)
-                print("\n\n")
+                # print("ini preds: ===\n")
+                # print(preds)
+                # print("\n\n")
 
             # Loss
             with dt[2]:
@@ -183,9 +183,9 @@ class BaseValidator:
             # Postprocess
             with dt[3]:
                 preds = self.postprocess(preds)
-                print("ini preds post: ===\n")
-                print(preds)
-                print("\n\n")
+                # print("ini preds post: ===\n")
+                # print(preds)
+                # print("\n\n")
 
             self.update_metrics(preds, batch)
             if self.args.plots and batch_i < 3:
@@ -228,25 +228,25 @@ class BaseValidator:
         Returns:
             (torch.Tensor): Correct tensor of shape(N,10) for 10 IoU thresholds.
         """
-        print("match prediction ============\n\n")
+        # print("match prediction ============\n\n")
         # Dx10 matrix, where D - detections, 10 - IoU thresholds
         correct = np.zeros((pred_classes.shape[0], self.iouv.shape[0])).astype(bool)
-        print("\nDx10 matrix: \n")
-        print(correct)
+        # print("\nDx10 matrix: \n")
+        # print(correct)
         
         # LxD matrix where L - labels (rows), D - detections (columns)
-        print("\ntrue_classes[:, None]: \n")
-        print(true_classes[:, None])
-        print("\n========\n")
-        print(pred_classes)
+        # print("\ntrue_classes[:, None]: \n")
+        # print(true_classes[:, None])
+        # print("\n========\n")
+        # print(pred_classes)
         
         correct_class = true_classes[:, None] == pred_classes
 
-        print("\niou * correct_class = ", (iou, correct_class))
+        # print("\niou * correct_class = ", (iou, correct_class))
         iou = iou * correct_class  # zero out the wrong classes
-        print("\n iou 1: ", iou)
+        # print("\n iou 1: ", iou)
         iou = iou.cpu().numpy()
-        print("\n iou cpu: ", iou)
+        # print("\n iou cpu: ", iou)
         
         for i, threshold in enumerate(self.iouv.cpu().tolist()):
             if use_scipy:
@@ -263,9 +263,9 @@ class BaseValidator:
                 print("not use scipy\n")
                 matches = np.nonzero(iou >= threshold)  # IoU > threshold and classes match
                 matches = np.array(matches).T
-                print("matches: \n")
-                print(matches)
-                print("\nmatches shape: ", matches.shape[0])
+                # print("matches: \n")
+                # print(matches)
+                # print("\nmatches shape: ", matches.shape[0])
                 
                 if matches.shape[0]:
                     if matches.shape[0] > 1:
@@ -275,8 +275,8 @@ class BaseValidator:
                         matches = matches[np.unique(matches[:, 0], return_index=True)[1]]
                     correct[matches[:, 1].astype(int), i] = True
 
-        print("correct: \n")
-        print(correct)
+        # print("correct: \n")
+        # print(correct)
         return torch.tensor(correct, dtype=torch.bool, device=pred_classes.device)
 
     def add_callback(self, event: str, callback):
