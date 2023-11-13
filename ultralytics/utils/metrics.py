@@ -486,7 +486,7 @@ def ap_per_class(tp,
 
     # Sort by objectness
     i = np.argsort(-conf)
-    print("\nsize of i argsort: ", i.shape)
+    # print("\nsize of i argsort: ", i.shape)
     tp, conf, pred_cls = tp[i], conf[i], pred_cls[i]
 
     # Find unique classes
