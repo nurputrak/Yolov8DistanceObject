@@ -106,7 +106,6 @@ class DetectionValidator(BaseValidator):
 
             if npr == 0:
                 if nl:
-                    print("masuk if nl:\n")
                     self.stats.append((correct_bboxes, *torch.zeros((2, 0), device=self.device), cls.squeeze(-1)))
                     if self.args.plots:
                         self.confusion_matrix.process_batch(detections=None, labels=cls.squeeze(-1))
@@ -147,7 +146,7 @@ class DetectionValidator(BaseValidator):
                 # TODO: maybe remove these `self.` arguments as they already are member variable
                 if self.args.plots:
                     self.confusion_matrix.process_batch(predn, labelsn)
-            self.stats.append((correct_bboxes, pred[:, 4], pred[:, 5], cls.squeeze(-1)))  # (conf, pcls, tcls)
+            self.stats.append((correct_bboxes, predn[:, 4], predn[:, 5], cls.squeeze(-1)))  # (conf, pcls, tcls)
 
             # Save
             if self.args.save_json:
