@@ -106,6 +106,7 @@ class DetectionValidator(BaseValidator):
 
             if npr == 0:
                 if nl:
+                    print("masuk if nl:\n")
                     self.stats.append((correct_bboxes, *torch.zeros((2, 0), device=self.device), cls.squeeze(-1)))
                     if self.args.plots:
                         self.confusion_matrix.process_batch(detections=None, labels=cls.squeeze(-1))
