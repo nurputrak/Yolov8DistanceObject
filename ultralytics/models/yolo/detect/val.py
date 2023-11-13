@@ -121,11 +121,11 @@ class DetectionValidator(BaseValidator):
                             ratio_pad=batch['ratio_pad'][si])  # native-space pred
             # print("\n\npredn2 === ", predn)
             # print("\n========================================\n")
-            # for i, (left, top, right, bottom, cls_pred) in enumerate(torch.cat((predn[:,0:4], predn[:,5:6]), 1).cpu().numpy()):
-            #     obj_distance = self.get_distance_obj(left, top, right, bottom, cls_pred.astype(int))
-            #     # print(obj_distance)
-            #     if(obj_distance > 5):
-            #       predn = torch.cat((predn[:i], predn[i+1:]), 0)
+            for i, (left, top, right, bottom, cls_pred) in enumerate(torch.cat((predn[:,0:4], predn[:,5:6]), 1).cpu().numpy()):
+                obj_distance = self.get_distance_obj(left, top, right, bottom, cls_pred.astype(int))
+                # print(obj_distance)
+                if(obj_distance > 5):
+                  predn = torch.cat((predn[:i], predn[i+1:]), 0)
             
             # Evaluate
             if nl:
