@@ -119,13 +119,18 @@ class DetectionValidator(BaseValidator):
             # print("\n\npredn1 === ", predn)
             ops.scale_boxes(batch['img'][si].shape[1:], predn[:, :4], shape,
                             ratio_pad=batch['ratio_pad'][si])  # native-space pred
-            # print("\n\npredn2 === ", predn)
-            # print("\n========================================\n")
-            for i, (left, top, right, bottom, cls_pred) in enumerate(torch.cat((predn[:,0:4], predn[:,5:6]), 1).cpu().numpy()):
+
+            # print("\n========================================\n")            
+            temp_tensor = torch.tensor([], device='cuda:0') # Initial null tensor with device cuda
+            for temp_pred in predn:
+                left, top, right, bottom, cls_pred = torch.cat((temp_pred[0:4], temp_pred[5:6]), 0).cpu().numpy()
+            
                 obj_distance = self.get_distance_obj(left, top, right, bottom, cls_pred.astype(int))
-                # print(obj_distance)
-                # if(obj_distance > 5):
-                #   predn = torch.cat((predn[:i], predn[i+1:]), 0)
+                if(obj_distance <= 5):
+                  temp_pass = torch.tensor([temp_pred.cpu().numpy()], device='cuda:0')
+                  temp_tensor = torch.cat((temp_tensor, temp_pass), 0)
+            
+            predn = temp_tensor.clone()
             
             # Evaluate
             if nl:
