@@ -50,7 +50,7 @@ class Detect(nn.Module):
             self.anchors, self.strides = (x.transpose(0, 1) for x in make_anchors(x, self.stride, 0.5))
             self.shape = shape
 
-        x_cat = torch.cat([xi.view(shape[0], self.no, -1) for xi in x], 2)
+        x_cat = torch.cat([xi.view(shape[0], self.no, -1) for xi in x], 2).permute(0, 2, 1)
         print("ook2")
         return x_cat
         # x_cat = torch.cat([xi.view(shape[0], self.no, -1) for xi in x], 2)
