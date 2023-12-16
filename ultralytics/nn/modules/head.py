@@ -99,6 +99,15 @@ class Segment(Detect):
         self.cv4 = nn.ModuleList(nn.Sequential(Conv(x, c4, 3), Conv(c4, c4, 3), nn.Conv2d(c4, self.nm, 1)) for x in ch)
 
     def forward(self, x):
+        # """Return model outputs and mask coefficients if training, otherwise return outputs and mask coefficients."""
+        # p = self.proto(x[0])  # mask protos
+        # bs = p.shape[0]  # batch size
+
+        # mc = torch.cat([self.cv4[i](x[i]).view(bs, self.nm, -1) for i in range(self.nl)], 2)  # mask coefficients
+        # x = self.detect(self, x)
+        # if self.training:
+        #     return x, mc, p
+        # return (torch.cat([x, mc], 1), p) if self.export else (torch.cat([x[0], mc], 1), (x[1], mc, p))
         """Return model outputs and mask coefficients if training, otherwise return outputs and mask coefficients."""
         p = self.proto(x[0])  # mask protos
         bs = p.shape[0]  # batch size
@@ -107,7 +116,9 @@ class Segment(Detect):
         x = self.detect(self, x)
         if self.training:
             return x, mc, p
-        return (torch.cat([x, mc], 1), p) if self.export else (torch.cat([x[0], mc], 1), (x[1], mc, p))
+        # return (torch.cat([x, mc], 1), p) if self.export else (torch.cat([x[0], mc], 1), (x[1], mc, p))
+        # !< https://github.com/FeiGeChuanShu/ncnn-android-yolov8
+        return (torch.cat([x, mc], 1).permute(0, 2, 1), p.view(bs, self.nm, -1)) if self.export else (torch.cat([x[0], mc], 1), (x[1], mc, p))
 
 
 class Pose(Detect):
