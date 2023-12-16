@@ -50,6 +50,9 @@ class Detect(nn.Module):
             self.anchors, self.strides = (x.transpose(0, 1) for x in make_anchors(x, self.stride, 0.5))
             self.shape = shape
 
+        x_cat = torch.cat([xi.view(shape[0], self.no, -1) for xi in x], 2)
+        print("ook2")
+        return x_cat
         # x_cat = torch.cat([xi.view(shape[0], self.no, -1) for xi in x], 2)
         # if self.export and self.format in ('saved_model', 'pb', 'tflite', 'edgetpu', 'tfjs'):  # avoid TF FlexSplitV ops
         #     box = x_cat[:, :self.reg_max * 4]
@@ -70,8 +73,6 @@ class Detect(nn.Module):
         # y = torch.cat((dbox, cls.sigmoid()), 1)
         # return y if self.export else (y, x)
     
-        print("ook2")
-        return torch.cat([xi.view(shape[0], self.no, -1) for xi in x], 2).permute(0, 2, 1)
 
     def bias_init(self):
         """Initialize Detect() biases, WARNING: requires stride availability."""
