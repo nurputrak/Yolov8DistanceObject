@@ -126,7 +126,7 @@ class DetectionValidator(BaseValidator):
                 left, top, right, bottom, cls_pred = torch.cat((temp_pred[0:4], temp_pred[5:6]), 0).cpu().numpy()
             
                 obj_distance = self.get_distance_obj(left, top, right, bottom, cls_pred.astype(int))
-                if(obj_distance <= 5):
+                if(obj_distance <= 6):
                   temp_pass = torch.tensor([temp_pred.cpu().numpy()], device='cuda:0')
                   temp_tensor = torch.cat((temp_tensor, temp_pass), 0)
             
@@ -162,41 +162,24 @@ class DetectionValidator(BaseValidator):
                 self.save_one_txt(predn, self.args.save_conf, shape, file)
                 
     def get_distance_obj(self, left, top, right, bottom, cls_pred):
-        list_obj = {0: 'bangku', 1: 'bollard', 2: 'lampu lalu lintas', 3: 'mobil', 4: 'motor',
-              5: 'orang', 6: 'pilar', 7: 'plang', 8: 'pohon', 9: 'pot', 10: 'tempat sampah',
-              11: 'tiang', 12: 'zebra cross'}
-    
-        known_width = {'lampu lalu lintas':15, 'orang': 30, 'pilar': 100, 'plang': 40,
-                    'pohon': 25, 'tiang': 20}
-        known_height = {'bangku':60, 'bollard':40, 'mobil':160, 'motor':85, 'pot':50,
-                        'tempat sampah':120, 'zebra cross':100}
-        known_dis = {'bangku': 400, 'bollard':200, 'lampu lalu lintas':400,
-                    'mobil':300, 'motor':200, 'orang': 500, 'pilar': 500, 'plang': 250,
-                    'pohon': 100, 'pot':200, 'tempat sampah':550, 'tiang': 250,
-                    'zebra cross':250}
-    
-        width_px_obj = {'bangku': 78, 'bollard':80, 'lampu lalu lintas':43,
-                          'mobil':181, 'motor':307, 'orang': 31, 'pilar': 150, 'plang': 108,
-                          'pohon': 117, 'pot':250, 'tempat sampah':166, 'tiang': 38,
-                          'zebra cross':132}
-    
         obj = list_obj[cls_pred]
         center_x = (left + right)/2
         center_y = (bottom + top)/2
         width = right - left
         height = bottom - top
-        distance1 = pow(640 - (center_y + (height - 36)),2)/5780
-    
-        if(obj in ['bangku','bollard', 'mobil', 'motor', 'pot', 'tempat sampah', 'zebra cross']):
-            focal_length = (width_px_obj[obj] / known_height[obj]) * known_dis[obj]
-            distance2 = round((((known_height[obj] / height) * focal_length) / 100), 1)
-        else:
-            focal_length = (width_px_obj[obj] / known_width[obj]) * known_dis[obj]
-            distance2 = round((((known_width[obj] / width) * focal_length) / 100), 1)
-    
-        # print(obj, cls)
-        if(distance1 < distance2): return distance1
-        return distance2
+
+        status_d1, status_d2, status_d3 = '', '', ''
+        distance1, distance2, distance3 = 0, 0, 0
+
+        #### Distance berdasarkan Grid
+        grid_y = 640 - bottom
+        if grid_y <= 20 : distance1 = 3; status_d1 = 'SD' #sangat dekat
+        elif grid_y > 20 and grid_y <= 170: distance1 = 6; status_d1 = 'D' #dekat
+        elif grid_y > 170 and grid_y <= 250: distance1 = 9; status_d1 = 'DM' #dekat menengah
+        elif grid_y > 250 and grid_y <= 310: distance1 = 12; status_d1 = 'J' #jauh
+        elif grid_y > 310: distance1 = 15; status_d1 = 'SJ' #sangat jauh
+            
+        return distance1
         
     def finalize_metrics(self, *args, **kwargs):
         """Set final values for metrics speed and confusion matrix."""
