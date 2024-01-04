@@ -162,7 +162,6 @@ class DetectionValidator(BaseValidator):
                 self.save_one_txt(predn, self.args.save_conf, shape, file)
                 
     def get_distance_obj(self, left, top, right, bottom, cls_pred):
-        obj = list_obj[cls_pred]
         center_x = (left + right)/2
         center_y = (bottom + top)/2
         width = right - left
